@@ -1,5 +1,7 @@
 
 from StatTool.LayerDict import LayerDict
+from StatTool.trie import Trie
+from StatTool.subcounter import SubCounter
 import functools
 
 
@@ -92,13 +94,18 @@ class CorpusModel(object):
         return dd
 
     def _fill_dist(self):
-        '''Fill distance table.'''
+        '''Fill distance table.
+
+        len(self.co)==len(self.pivot)
+
+        self.co[-1]==0'''
         pivotlen = len(self.pivot)
         for i in range(pivotlen-1):
             x = self.pivot[i]
             y = self.pivot[i+1]
             d = self._dist(x, y)
             self.co.append(d)
+        self.co.append(0)
 
     def _dist(self, x, y):
         '''
@@ -163,3 +170,27 @@ class CorpusModel(object):
                 break
             table.append(d)
         return table
+
+    def get_str(self, pos: int, n: int):
+        '''get substr from self.pivot[pos]
+
+        pos: index of self.pivot
+        n: len of substr'''
+        entry_num, offset = self.pivot[pos]
+        return self.data[entry_num][offset:offset+n]
+
+    def gen_trie(self, minocc):
+        trie = Trie()
+        #d: dict[tuple[int, int], int] = {}
+        count = SubCounter()
+        for i in range(self._len()-1):
+            common = self.co[i]  # len of common str with next pivot
+            for k in range(common+1):  # k in [0,common]
+                count.inc(k)
+            for k in range(common+1, len(count)):
+                occ = count.get(k)
+                if occ >= minocc:
+                    s = self.get_str(i, k)
+                    trie.insert(s, occ)
+            count.clear(common+1)
+        return trie
