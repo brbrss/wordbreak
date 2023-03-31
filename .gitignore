@@ -1,4 +1,5 @@
 /data/*
+/spike/*
+/ParseTool/*
 *.pyc
-/test/*
 *.pickle
