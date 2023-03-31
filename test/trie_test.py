@@ -5,7 +5,7 @@ import unittest
 class TestTrie(unittest.TestCase):
 
     def test_insert(self):
-        trie = Trie()
+        trie = Trie('', 0)
         d = ['apple', 'about', 'boo', 'bot']
         i = 1
         for s in d:
@@ -18,7 +18,7 @@ class TestTrie(unittest.TestCase):
         self.assertEqual(node.count, 8)
 
     def test_netcount(self):
-        trie = Trie()
+        trie = Trie('', 0)
         d = {'x': 36, 'xy': 6, 'b': 2, 'xz': 5, 'xyy': 6, 'bb': 2, 'bbb': 2}
         i = 1
         for s in d:

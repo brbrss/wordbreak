@@ -1,10 +1,10 @@
 
 
-class Node(object):
-    def __init__(self, c, count):
+class Trie(object):
+    def __init__(self, c='', count=0):
         self.c = c
         self.count = count
-        self.children: dict[str, Node] = {}
+        self.children: dict[str, Trie] = {}
 
     def find_child(self, c):
         for cc in self.children:
@@ -13,14 +13,8 @@ class Node(object):
                 return node
         return None
 
-
-class Trie(object):
-    def __init__(self):
-        #self.data = {}
-        self.root = Node('', 0)
-
     def find_node(self, s: str):
-        cur = self.root
+        cur = self
         for c in s:
             cur = cur.find_child(c)
             if cur is None:
@@ -32,7 +26,7 @@ class Trie(object):
         parent = self.find_node(s[:-1])
         if parent.children.get(last, None):
             pass
-        node = Node(last, count)
+        node = Trie(last, count)
         parent.children[last] = node
 
     def net_count(self, s: str):
