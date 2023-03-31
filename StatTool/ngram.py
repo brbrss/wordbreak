@@ -187,7 +187,8 @@ class CorpusModel(object):
             common = self.co[i]  # len of common str with next pivot
             for k in range(common+1):  # k in [0,common]
                 count.inc(k)
-            for k in range(common+1, len(count)):
+            for k in range(common+1, len(count)): 
+                # longer str counts are finalized
                 occ = count.get(k)
                 if occ >= minocc:
                     s = self.get_str(i, k)

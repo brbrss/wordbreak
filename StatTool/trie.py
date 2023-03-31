@@ -35,13 +35,10 @@ class Trie(object):
             cur = child
         cur.count = count
 
-    def net_count(self, s: str):
-        node = self.find_node(s)
-        if node is None:
-            return 0
-        n = node.count
-        for c in node.children:
-            n -= node.children[c].count
+    def net_count(self):
+        n = self.count
+        for c in self.children:
+            n -= self.children[c].count
         return n
 
     def layer(self, n: int):
@@ -52,6 +49,37 @@ class Trie(object):
         for c in self.children:
             node = self.children[c]
             sub = node.layer(n-1)
-            dd = {(self.c+cc):sub[cc] for cc in sub}
+            dd = {(self.c+cc): sub[cc] for cc in sub}
             d.update(dd)
         return d
+
+    def _to_dict(self):
+        result = {}
+        for c in self.children:
+            node = self.children[c]
+            d = node._to_dict()
+            dd = {(self.c+cc): d[cc] for cc in d}
+            result.update(dd)
+        result[self.c] = self.count
+        return result
+
+
+def _substract(d, s, val):
+    for i in range(0, len(s)+1):
+        for j in range(i+1, len(s)+1):
+            ss = s[i:j]
+            d[ss] -= val
+
+
+def to_dict(trie: Trie, min_count):
+    '''convert to dict, nodes with net count less than
+    specified are ignored'''
+    d = trie._to_dict()
+    ls = list(d.keys())
+    ls.sort(key=lambda s: len(s), reverse=True)
+    result = {}
+    for s in ls:
+        if d[s] >= min_count:
+            result[s] = d[s]
+            _substract(d, s, d[s])
+    return result
