@@ -1,36 +1,49 @@
 import pickle
-from StatTool.ngram import CorpusModel
+from StatTool.mergesort_ngram import MergeCorpusModel
+from StatTool.trie import to_dict
 
-from ParseTool.model import ThreadModel
 
-f = open('post.pickle', 'rb')
+f = open('./spike/title/data.pickle', 'rb')
 data = pickle.load(f)
 f.close()
 
-cm = CorpusModel()
-text_key = {}
+cm = MergeCorpusModel(2000, 'output')
+# tid, index of post, size of data so far
+text_key: list[tuple[int, int, int]] = []
 count = 0
-for tid in data:
-    t = data[tid]
-    cm.feed(t.title)
-    for i in range(len(t.post_list)):
-    #     pid = tid, i
-    #     content = t.post_list[i].content
-    #     cm.feed(content)
-    #     text_key[count] = tid, i
-        count += 1
-del data
+running_size = 0
+# for tid in data:
+#     t = data[tid]
+#     for i in range(len(t.post_list)):
+#         pid = tid, i
+#         content = t.post_list[i].content
+#         cm.feed(content)
+#         text_key[count] = tid, i, running_size
+#         running_size += len(content)
+#         count += 1
+# del data
 
-#with open('key.dump', 'wb') as f:
-#    pickle.dump(text_key, f)
+for t in data:
+    cm.feed(t)
+    text_key.append((0, 0, running_size))
+    running_size += len(t)
+    count += 1
 
-# cm.proc() # memory error
+with open('output/key.dump', 'wb') as f:
+    pickle.dump(text_key, f)
 
-#def dump_pivot(pivot):
+cm.key_table = [t[2] for t in text_key]
+cm.proc_pivot()
+trie = cm.gen_trie(10)
+with open('output/trie.dump', 'wb') as f:
+    pickle.dump(trie, f)
+word_dict = to_dict(trie, 10)
+with open('output/words.dump', 'wb') as f:
+    pickle.dump(word_dict, f)
+
+# def dump_pivot(pivot):
 #    for key in pivot:
 
-def do_batch():
-    cm._sort()
 
 # MAX_ENTRY = 100
 # count = 0
@@ -43,7 +56,6 @@ def do_batch():
 #             do_batch()
 
 
-print('no. of pots: ',count)
 # cm.proc()
 # ftable = cm.freq_table(20)
 # with open('test/ftt.dump', 'wb') as f:
