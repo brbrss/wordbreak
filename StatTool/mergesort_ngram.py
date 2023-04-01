@@ -33,21 +33,21 @@ class MergeCorpusModel(CorpusModel):
         self.folder = folder
         self.batch_size = batch_size
         self.pivot_fp = None  # file path of partial pivot table
-        self.key_table: list[int] = []
-        self.running_total = 0
+        self._key_table: list[int] = []
+        self._running_total = 0
         #self.pivot: list[tuple[int, int]] = []
 
     def feed(self, s):
         self.data.append(s)
-        self.key_table.append(self.running_total)
-        self.running_total += len(s)
+        self._key_table.append(self._running_total)
+        self._running_total += len(s)
 
     def encode_pivot_entry(self, entry: tuple[int, int]):
         '''
         returns binary form of pivot entry
         '''
         x, y = entry  # x entry index, y char offset
-        offset = self.key_table[x]
+        offset = self._key_table[x]
         return struct.pack('i', offset + y)
 
     def decode_pivot_entry(self, bdata):
@@ -55,8 +55,8 @@ class MergeCorpusModel(CorpusModel):
         returns pivot entry from binary form
         '''
         val = struct.unpack('i', bdata)[0]
-        index = bisect.bisect(self.key_table, val)-1
-        offset = self.key_table[index]
+        index = bisect.bisect(self._key_table, val)-1
+        offset = self._key_table[index]
         return index, val-offset
 
     def gen_dump_name(self, start, end):
