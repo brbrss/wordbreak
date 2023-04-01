@@ -143,6 +143,7 @@ class MergeCorpusModel(CorpusModel):
         start = 0
         data_len = len(self.data)
         while start < data_len:
+            print('processing pivot batch at: ', start)
             self.proc_part(start, self.batch_size)
             start += self.batch_size
         return
