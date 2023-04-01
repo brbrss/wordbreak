@@ -82,7 +82,7 @@ class MergeCorpusModel(CorpusModel):
         buf = src_file.read(1024)
         if len(buf) % 4 != 0:
             raise RuntimeError('file size should be multiples of 8')
-        num_entry = len(buf) // 8
+        num_entry = len(buf) // 4
         pivot_buf = [self.decode_pivot_entry(
             buf[i*4:i*4+4]) for i in range(num_entry)]
         return pivot_buf
