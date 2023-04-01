@@ -1,4 +1,5 @@
 
+import functools
 from StatTool.ngram import CorpusModel
 import pickle
 import struct
@@ -8,6 +9,7 @@ import os.path
 from StatTool.subcounter import SubCounter
 
 from StatTool.trie import Trie
+from StatTool.bucket import BucketList
 
 
 class MergeCorpusModel(CorpusModel):
@@ -61,6 +63,23 @@ class MergeCorpusModel(CorpusModel):
                 k = (i, j)
                 self.pivot.append(k)
         self._sort()
+
+    def _bucket_sort(self):
+        self.bucket_pivot.sort()
+        def f(x, y): return self._cmp(x, y)
+        for k in self.bucket_pivot.data:
+            self.bucket_pivot.data[k].sort(key=functools.cmp_to_key(f))
+        return
+
+    def _partial_pivot_bucket(self, start, end):
+        self.bucket_pivot = BucketList()
+        for i in range(start, end):
+            for j in range(len(self.data[i])):
+                pivot_entry = (i, j)
+                bucket_key = self._get(pivot_entry)
+                self.bucket_pivot.add(bucket_key, pivot_entry)
+        self._bucket_sort()
+        print('num of buckets: ',len(self.bucket_pivot.data))
 
     def proc_part(self, start, size):
         '''
