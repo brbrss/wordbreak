@@ -55,19 +55,24 @@ class MergeCorpusModel(CorpusModel):
         filename = str(start)+'to'+str(end)+'.pickle'
         return os.path.join(self.folder, filename)
 
-    def proc_part(self, start, size):
-        '''
-        Process data chunk self.s[start:start+size]
-
-        start: starting data index
-        size: number of entries to process'''
-        self.pivot = []
-        end = min(start+size, len(self.data))
+    def _partial_pivot(self, start, end):
         for i in range(start, end):
             for j in range(len(self.data[i])):
                 k = (i, j)
                 self.pivot.append(k)
         self._sort()
+
+    def proc_part(self, start, size):
+        '''
+        Process pivot for data in [start:start+size]
+        and merge with existing pivot data.
+
+        start: starting data index
+        size: number of entries to process'''
+
+        self.pivot = []
+        end = min(start+size, len(self.data))
+        self._partial_pivot(start, end)
         fp = self.gen_dump_name(start, end)
         self.merge_pivot(fp)
         self.pivot.clear()
@@ -150,16 +155,7 @@ class MergeCorpusModel(CorpusModel):
 
     def proc(self):
         '''do not call this'''
-        #self.pivot: list[tuple[int, int]] = []
-        #self.co = []
-
-        print('Preprocessing text...')
-        self.proc_pivot()
-        print('Pivot build succeeded')
-        print('Filling distance table...')
-        self._fill_dist()
-        print('Processing finished.')
-        pass
+        raise NotImplementedError('do not call this function')
 
     def gen_trie(self, minocc):
         trie = Trie()
