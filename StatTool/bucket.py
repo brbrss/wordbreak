@@ -36,4 +36,10 @@ class BucketList(object):
         return BucketIterator(self)
 
     def sort(self):
-        self.data = dict(sorted(self.data.items(), key=lambda item: item[1]))
+        self.data = dict(sorted(self.data.items()))
+
+    def clear(self):
+        self.data.clear()
+
+    def __len__(self):
+        return sum([len(self.data[k]) for k in self.data])

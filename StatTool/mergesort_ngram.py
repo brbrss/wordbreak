@@ -34,7 +34,13 @@ class MergeCorpusModel(CorpusModel):
         self.batch_size = batch_size
         self.pivot_fp = None  # file path of partial pivot table
         self.key_table: list[int] = []
-        self.pivot: list[tuple[int, int]] = []
+        self.running_total = 0
+        #self.pivot: list[tuple[int, int]] = []
+
+    def feed(self, s):
+        self.data.append(s)
+        self.key_table.append(self.running_total)
+        self.running_total += len(s)
 
     def encode_pivot_entry(self, entry: tuple[int, int]):
         '''
@@ -54,7 +60,7 @@ class MergeCorpusModel(CorpusModel):
         return index, val-offset
 
     def gen_dump_name(self, start, end):
-        filename = str(start)+'to'+str(end)+'.pickle'
+        filename = 'to'+str(end)+'.pickle'
         return os.path.join(self.folder, filename)
 
     def _partial_pivot(self, start, end):
@@ -71,15 +77,14 @@ class MergeCorpusModel(CorpusModel):
             self.bucket_pivot.data[k].sort(key=functools.cmp_to_key(f))
         return
 
-    def _partial_pivot_bucket(self, start, end):
-        self.bucket_pivot = BucketList()
+    def _partial_pivot_bucket(self, start, end): 
         for i in range(start, end):
             for j in range(len(self.data[i])):
                 pivot_entry = (i, j)
                 bucket_key = self._get(pivot_entry)
                 self.bucket_pivot.add(bucket_key, pivot_entry)
         self._bucket_sort()
-        print('num of buckets: ',len(self.bucket_pivot.data))
+        #print('num of buckets: ', len(self.bucket_pivot.data))
 
     def proc_part(self, start, size):
         '''
@@ -88,56 +93,61 @@ class MergeCorpusModel(CorpusModel):
 
         start: starting data index
         size: number of entries to process'''
-
-        self.pivot = []
+        self.bucket_pivot = BucketList()
         end = min(start+size, len(self.data))
-        self._partial_pivot(start, end)
+        self._partial_pivot_bucket(start, end)
         fp = self.gen_dump_name(start, end)
         self.merge_pivot(fp)
-        self.pivot.clear()
+        self.bucket_pivot.clear()
         return
 
     def _parse_pivot_dump(self, src_file: BinaryIO):
-        '''Reads file and returns list of pivot.
-        Only reads a limited chunk of file data.
+        '''Reads file and returns one pivot.
         Call this function again to read more.
-        Returns [] if eof is reached.'''
+        Returns None if eof is reached.'''
 
-        buf = src_file.read(1024)
-        if len(buf) % 4 != 0:
-            raise RuntimeError('file size should be multiples of 8')
-        num_entry = len(buf) // 4
-        pivot_buf = [self.decode_pivot_entry(
-            buf[i*4:i*4+4]) for i in range(num_entry)]
+        buf = src_file.read(4)
+        if len(buf) != 4:
+            #return None
+            raise RuntimeError('no more data to be read')
+        pivot_buf = self.decode_pivot_entry(buf)
         return pivot_buf
 
     def _merge_pivot_file(self, src_file: BinaryIO, dst_file: BinaryIO):
         '''file version'''
-        i = 0  # index to current pivot table
-        cur_len = len(self.pivot)
-        while True:
-            old_pivot = self._parse_pivot_dump(src_file)
-            if not old_pivot:
-                break
-            old_len = len(old_pivot)
-            j = 0  # index to old pivot
-            while i < cur_len and j < old_len:
-                old = self.encode_pivot_entry(old_pivot[j])
-                cur = self.encode_pivot_entry(self.pivot[i])
-                cmp_res = self._cmp(old_pivot[j], self.pivot[i])
+
+        cur_it = iter(self.bucket_pivot)
+
+        def cur_next():
+            try:
+                return next(cur_it)
+            except StopIteration:
+                return None
+        def old_next():
+            try:
+                return self._parse_pivot_dump(src_file)
+            except Exception:
+                return None
+        cur_pivot = cur_next()  # non empty
+        old_pivot = old_next()  # non empty
+        while cur_pivot or old_pivot:
+            if cur_pivot and old_pivot:
+                old = self.encode_pivot_entry(old_pivot)
+                cur = self.encode_pivot_entry(cur_pivot)
+                cmp_res = self._cmp(old_pivot, cur_pivot)
                 if cmp_res <= 0:  # old smaller
                     dst_file.write(old)
-                    j += 1
+                    old_pivot = old_next()
                 else:
                     dst_file.write(cur)
-                    i += 1
-                pass
-            while j < old_len:
-                dst_file.write(self.encode_pivot_entry(old_pivot[j]))
-                j += 1
-        while i < cur_len:
-            dst_file.write(self.encode_pivot_entry(self.pivot[i]))
-            i += 1
+                    cur_pivot = cur_next()
+            elif old_pivot:
+                dst_file.write(self.encode_pivot_entry(old_pivot))
+                old_pivot = old_next()
+            elif cur_pivot:
+                dst_file.write(self.encode_pivot_entry(cur_pivot))
+                cur_pivot = cur_next()
+        return
 
     def merge_pivot(self, dst_fp):
         '''Merge pivot table. Contains two inputs: current batch pivot from
@@ -150,7 +160,7 @@ class MergeCorpusModel(CorpusModel):
         src_fp = self.pivot_fp
         f2 = open(dst_fp, 'wb')
         if src_fp is None:
-            for t in self.pivot:
+            for t in self.bucket_pivot:
                 buf = self.encode_pivot_entry(t)
                 f2.write(buf)
         else:
@@ -205,5 +215,6 @@ class MergeCorpusModel(CorpusModel):
                     pivot_2 = self.decode_pivot_entry(buf)
                 else:
                     pivot_2 = None
+                    print('end of pivot table reached')
                 #i += 1
         return trie

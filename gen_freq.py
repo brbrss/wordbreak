@@ -38,7 +38,7 @@ print('key data dumped')
 
 print('processing pivot')
 MIN_OCC = 50
-cm.key_table = [t[2] for t in text_key]
+#cm.key_table = [t[2] for t in text_key]
 cm.proc_pivot()
 
 print('generating trie')
