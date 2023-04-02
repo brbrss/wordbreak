@@ -77,7 +77,7 @@ class MergeCorpusModel(CorpusModel):
             self.bucket_pivot.data[k].sort(key=functools.cmp_to_key(f))
         return
 
-    def _partial_pivot_bucket(self, start, end): 
+    def _partial_pivot_bucket(self, start, end):
         for i in range(start, end):
             for j in range(len(self.data[i])):
                 pivot_entry = (i, j)
@@ -108,7 +108,7 @@ class MergeCorpusModel(CorpusModel):
 
         buf = src_file.read(4)
         if len(buf) != 4:
-            #return None
+            # return None
             raise RuntimeError('no more data to be read')
         pivot_buf = self.decode_pivot_entry(buf)
         return pivot_buf
@@ -123,6 +123,7 @@ class MergeCorpusModel(CorpusModel):
                 return next(cur_it)
             except StopIteration:
                 return None
+
         def old_next():
             try:
                 return self._parse_pivot_dump(src_file)
@@ -171,13 +172,27 @@ class MergeCorpusModel(CorpusModel):
         self.pivot_fp = dst_fp
         return
 
-    def proc_pivot(self):
-        '''Create and sort pivot'''
+    def proc_pivot(self, start=0, pivot_fp=None, end=0):
+        '''Create and sort pivot. 
+        Can start afresh or resume from existing pivot dump.
 
-        start = 0
+        start: index of data entry to start from
+        pivot_fp: file path of existing pivot data dump
+        end: end index of data to process, use 0 
+        to process all data'''
+
+        #start = 0
+        self.pivot_fp = pivot_fp
         data_len = len(self.data)
-        while start < data_len:
-            print('processing pivot batch at: ', start)
+        if end <= 0:
+            end = data_len
+        print('number of text entries: ', data_len)
+        print('process until entry index: ', end)
+        print('amount of text to process: ', sum(
+            [len(self.data[t]) for t in range(start, end)]))
+        while start < end:
+            print('processing pivot batch: ', start,
+                  ' to ', start+self.batch_size)
             self.proc_part(start, self.batch_size)
             start += self.batch_size
         return
@@ -215,6 +230,6 @@ class MergeCorpusModel(CorpusModel):
                     pivot_2 = self.decode_pivot_entry(buf)
                 else:
                     pivot_2 = None
-                    print('end of pivot table reached')
+                    #print('end of pivot table reached')
                 #i += 1
         return trie

@@ -9,7 +9,7 @@ f = open('./data/post.pickle', 'rb')
 data = pickle.load(f)
 f.close()
 
-BATCH_SIZE = 100 * 1000
+BATCH_SIZE = 20 * 1000
 cm = MergeCorpusModel(BATCH_SIZE, 'output')
 # tid, index of post, size of data so far
 text_key: list[tuple[int, int, int]] = []
@@ -37,12 +37,12 @@ with open('output/key.dump', 'wb') as f:
 print('key data dumped')
 
 print('processing pivot')
-MIN_OCC = 50
 #cm.key_table = [t[2] for t in text_key]
-cm.proc_pivot()
+cm.proc_pivot(start=130000, pivot_fp='output/to130000.pickle', end=0)
 
 print('generating trie')
 
+MIN_OCC = 50
 trie = cm.gen_trie(MIN_OCC)
 with open('output/trie.dump', 'wb') as f:
     pickle.dump(trie, f)
