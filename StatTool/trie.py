@@ -94,3 +94,43 @@ def to_dict(trie: Trie, min_count):
             result[s] = d[s]
             _substract(d, s, d[s])
     return result
+
+
+def _match_to_trie(s: str, t: Trie, start: int):
+    '''Helper of match_to_trie
+
+    Finds longest matching substring with a set given index
+    s: to be matched
+    t: trie of word candidates
+    start: starting index
+
+    returns: int `end` such that s[start:end] is the longest
+    matching substring starting at start 
+    '''
+    cur = t
+    best_end = start
+    for k in range(start, len(s)):
+        c = s[k]
+        node = cur.find_child(c)
+        if not node:
+            return best_end
+        if node.valid:
+            best_end = k+1
+    return best_end
+
+
+def match_to_trie(s: str, t: Trie):
+    ''' match string to trie
+
+    Returns list of valid words occuring in string. 
+    A word is valid if the corresponding node in trie exists
+    and is valid'''
+
+    res = []
+    cur_j = 0
+    for i in range(len(s)):
+        j = _match_to_trie(s, t, i)
+        if j > cur_j and j > i:
+            cur_j = j
+            res.append(s[i:j])
+    return res

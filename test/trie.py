@@ -1,5 +1,6 @@
 from StatTool.trie import Trie
 from StatTool.trie import to_dict
+from StatTool.trie import match_to_trie
 import unittest
 
 
@@ -83,6 +84,18 @@ class TestTrie(unittest.TestCase):
                 trie.insert(s[i:j], 49)
         target = {s: 49}
         self.assertDictEqual(to_dict(trie, 2), target)
+
+    def test_match(self):
+        trie = Trie('', 0)
+        d = {'x': 55, 'y': 33, 'xy': 10, 'xyx': 6}
+        net_d = {'x': 55-10-6, 'y': 33-10, 'xy': 4, 'xyx': 6, '': 0}
+        for s in d:
+            trie.insert(s, d[s])
+        trie.net_count(trie, 1, '')
+        self.assertDictEqual(trie._to_dict(), net_d)
+        s = 'xyx z xyzx'
+        ls = match_to_trie(s, trie)
+        self.assertListEqual(ls, ['xyx', 'xy', 'x'])
 
 
 if __name__ == '__main__':
