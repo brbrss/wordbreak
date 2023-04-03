@@ -9,7 +9,7 @@ class TestMcm(unittest.TestCase):
 
     def test_encode(self):
         cm = MergeCorpusModel(10)
-        cm.key_table = [0,15,235,1984,2358,6134]
+        cm._key_table = [0,15,235,1984,2358,6134]
         t = 5,4096
         data = cm.encode_pivot_entry(t)
         output = cm.decode_pivot_entry(data)

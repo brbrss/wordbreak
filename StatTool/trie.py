@@ -5,6 +5,7 @@ class Trie(object):
         self.c = c
         self.count = count
         self.children: dict[str, Trie] = {}
+        self.valid = True  # is a valid word node
 
     def find_child(self, c):
         if c in self.children:
@@ -35,11 +36,21 @@ class Trie(object):
             cur = child
         cur.count = count
 
-    def net_count(self):
-        n = self.count
+    def net_count(self, root: 'Trie', min_occ: int, prefix: str):
+        s = prefix + self.c
         for c in self.children:
-            n -= self.children[c].count
-        return n
+            node = self.children[c]
+            node.net_count(root, min_occ, s)
+        if self.count < min_occ:
+            self.valid = False
+            return
+        for i in range(0, len(s)+1):
+            for j in range(i+1, len(s)+1):
+                ss = s[i:j]
+                node = root.find_node(ss)
+                if ss != s and node:
+                    node.count -= self.count
+        return
 
     def layer(self, n: int):
         '''get dict of str:count with len(str)==n'''
