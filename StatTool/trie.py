@@ -1,3 +1,4 @@
+from queue import SimpleQueue, LifoQueue
 
 
 class Trie(object):
@@ -36,20 +37,36 @@ class Trie(object):
             cur = child
         cur.count = count
 
-    def net_count(self, root: 'Trie', min_occ: int, prefix: str):
-        s = prefix + self.c
-        for c in self.children:
-            node = self.children[c]
-            node.net_count(root, min_occ, s)
-        if self.count < min_occ:
-            self.valid = False
-            return
-        for i in range(0, len(s)+1):
-            for j in range(i+1, len(s)+1):
-                ss = s[i:j]
-                node = root.find_node(ss)
-                if ss != s and node:
-                    node.count -= self.count
+    def _depth_queue(self):
+        '''queue of nodes, shallow nodes first
+
+        returns list'''
+
+        ls = ['']
+        i = 0
+        while i < len(ls):
+            s = ls[i]
+            i += 1
+            node = self.find_node(s)
+            for c in node.children:
+                ls.append(s+c)
+        return ls
+
+    def net_count(self, min_occ: int):
+        ls = self._depth_queue()
+        while ls:
+            s = ls.pop()
+            print(s)
+            node = self.find_node(s)
+            if node.count < min_occ:
+                node.valid = False
+            else:
+                for i in range(0, len(s)+1):
+                    for j in range(i+1, len(s)+1):
+                        ss = s[i:j]
+                        ancestor = self.find_node(ss)
+                        if ss != s and ancestor:
+                            ancestor.count -= node.count
         return
 
     def layer(self, n: int):

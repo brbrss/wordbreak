@@ -24,7 +24,7 @@ class TestTrie(unittest.TestCase):
         d = {'z': 53}
         for s in d:
             trie.insert(s, d[s])
-        trie.net_count(trie, 2, '')
+        trie.net_count(2)
         self.assertEqual(trie.find_node('z').count, 53)
 
     def test_netcount_simple(self):
@@ -32,18 +32,22 @@ class TestTrie(unittest.TestCase):
         d = {'x': 360, 'y': 10, 'z': 5, 'xy': 7, 'zx': 2}
         for s in d:
             trie.insert(s, d[s])
-        trie.net_count(trie, 2, '')
+        trie.net_count(2)
         self.assertEqual(trie.find_node('x').count, 360-7-2)
         self.assertEqual(trie.find_node('xy').count, 7)
 
     def test_netcount_more(self):
         trie = Trie('', 0)
-        d = {'x': 36, 'xy': 6, 'b': 2, 'xz': 5, 'xyy': 6, 'bb': 2, 'bbb': 2}
+        d = {'x': 35, 'xy': 19, 'xb': 7, 'b': 20,
+             'xyy': 6, 'bb': 2, 'bxy': 10}
         for s in d:
             trie.insert(s, d[s])
-        trie.net_count(trie, 5, '')
-        self.assertEqual(trie.find_node('x').count, 36-6-5)
-        self.assertEqual(trie.find_node('bbb').valid, False)
+        trie.net_count(5)
+        # x - xb - xyy - bxy
+        self.assertEqual(trie.find_node('xb').valid, True)
+        self.assertEqual(trie.find_node('b').valid, False)
+        self.assertEqual(trie.find_node('x').count, 35-7-6-10)
+        self.assertEqual(trie.find_node('b').count, 20-10-7)
 
     def test_insert_reverse(self):
         trie = Trie('', 0)
@@ -91,7 +95,7 @@ class TestTrie(unittest.TestCase):
         net_d = {'x': 55-10-6, 'y': 33-10, 'xy': 4, 'xyx': 6, '': 0}
         for s in d:
             trie.insert(s, d[s])
-        trie.net_count(trie, 1, '')
+        trie.net_count(1)
         self.assertDictEqual(trie._to_dict(), net_d)
         s = 'xyx z xyzx'
         ls = match_to_trie(s, trie)
