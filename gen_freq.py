@@ -51,6 +51,6 @@ MIN_OCC = 50
 trie = cm.gen_trie(MIN_OCC)
 with open('output/trie.dump', 'wb') as f:
     pickle.dump(trie, f)
-trie.net_count(trie,MIN_OCC,'')
+trie.net_count(MIN_OCC)
 with open('output/net_trie.dump', 'wb') as f:
     pickle.dump(trie, f)

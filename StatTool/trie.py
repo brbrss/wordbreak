@@ -56,7 +56,6 @@ class Trie(object):
         ls = self._depth_queue()
         while ls:
             s = ls.pop()
-            print(s)
             node = self.find_node(s)
             if node.count < min_occ:
                 node.valid = False
@@ -133,6 +132,7 @@ def _match_to_trie(s: str, t: Trie, start: int):
             return best_end
         if node.valid:
             best_end = k+1
+        cur = node
     return best_end
 
 
@@ -144,10 +144,13 @@ def match_to_trie(s: str, t: Trie):
     and is valid'''
 
     res = []
-    cur_j = 0
-    for i in range(len(s)):
+    i = 0
+    len_s = len(s)
+    while i < len_s:
         j = _match_to_trie(s, t, i)
-        if j > cur_j and j > i:
-            cur_j = j
+        if j > i:
             res.append(s[i:j])
+            i = j
+        else:
+            i += 1
     return res
