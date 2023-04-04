@@ -101,6 +101,32 @@ class TestTrie(unittest.TestCase):
         ls = match_to_trie(s, trie)
         self.assertListEqual(ls, ['xyx', 'xy', 'x'])
 
+    def test_net_cross(self):
+        trie = Trie('', 0)
+        a = 'abc'
+        b = 'xyz'
+        ls = []
+        for i in range(2):
+            for j in range(2):
+                s = a[i]+'u'+b[j]
+                ls.append(s)
+        d = {}
+        for s in ls:
+            for i in range(len(s)):
+                for j in range(i+1, len(s)+1):
+                    ss = s[i:j]
+                    if ss in d:
+                        d[ss] += 1
+                    else:
+                        d[ss] = 1
+        net_d = {}
+        for s in d:
+            if d[s]>=2:
+                trie.insert(s, d[s])
+        trie.net_count(2)
+        #self.assertDictEqual(trie._to_dict(), net_d)
+
+
 
 if __name__ == '__main__':
     unittest.main()

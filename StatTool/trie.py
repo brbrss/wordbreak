@@ -90,6 +90,13 @@ class Trie(object):
         result[self.c] = self.count
         return result
 
+    def traverse(self, prefix, cb):
+        s = prefix + self.c
+        cb(self, s)
+        for c in self.children:
+            self.children[c].traverse(s, cb)
+        return
+
 
 def _substract(d, s, val):
     for i in range(0, len(s)+1):
