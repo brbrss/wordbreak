@@ -6,22 +6,14 @@ from StatTool.trie import match_to_trie
 import numpy
 
 
-def gen_index():
-    df = filepickle.load('output/df.dump')
-    s_index = {}
-    i = 0
-    for row in df.itertuples():
-        s_index[row.s] = i
-        i += 1
-    return s_index
+def gen_matrix(ntrie_fp, word_fp, data_fp, matrix_fp):
 
-
-def gen_matrix(trie_fp, data_fp, matrix_fp):
-    word_index = gen_index()
-
-    trie: Trie = filepickle.load(trie_fp)
+    print('generating word doc matrix')
+    trie: Trie = filepickle.load(ntrie_fp)
     data = filepickle.load(data_fp)
 
+    word_list = filepickle.load(word_fp)
+    word_index = {word_list[i]: i for i in range(len(word_list))}
     nword = len(word_index)
 
     len_data = len(data)
@@ -29,6 +21,8 @@ def gen_matrix(trie_fp, data_fp, matrix_fp):
     passed = 0
     cur_thread = 0
     word_matrix = numpy.zeros(shape=(nword, len_data))  # word, doc shape
+    print('num of words: ', nword)
+    print('num of doc: ', len_data)
     print('start counting')
     for tid in data:
         passed += 1

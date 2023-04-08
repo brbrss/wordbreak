@@ -68,6 +68,30 @@ class Trie(object):
                             ancestor.count -= node.count
         return
 
+    def exact_net(self):
+        '''invalidates nodes having same count as any superstring'''
+        def _purge(s, count):
+            node = self.find_node(s)
+            if not node.valid:
+                return
+            if node.count != count:
+                return
+            node.valid = False
+            if len(s) <= 1:
+                return
+            _purge(s[1:], count)
+            _purge(s[:-1], count)
+            return
+
+        ls = self._depth_queue()
+        while ls:
+            s = ls.pop()
+            node = self.find_node(s)
+            if node.valid and len(s) >= 1:
+                _purge(s[1:], node.count)
+                _purge(s[:-1], node.count)
+        return
+
     def layer(self, n: int):
         '''get dict of str:count with len(str)==n'''
         if n == 0:
@@ -81,6 +105,8 @@ class Trie(object):
         return d
 
     def _to_dict(self):
+        '''
+        return str:count dict'''
         result = {}
         for c in self.children:
             node = self.children[c]

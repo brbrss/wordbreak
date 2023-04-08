@@ -1,3 +1,5 @@
+from inspect import signature
+
 
 class Step:
     def __init__(self, name, f, kparams, output_name):
@@ -5,6 +7,15 @@ class Step:
         self.f = f
         self.kparams = kparams
         self.output_name = output_name
+
+    def _validate(self):
+        sig = signature(self.f)
+        for k in sig.parameters.keys():
+            if k not in self.kparams:
+                err_msg = 'Parameter not found: ' + \
+                    str(k)+' in function '+self.name
+                raise RuntimeError(err_msg)
+        pass
 
     def __call__(self, kargs):
         return self.f(**kargs)
@@ -16,7 +27,7 @@ class Pipeline:
     in pipeline'''
 
     def __init__(self):
-        self.L = []
+        self.L: list[Step] = []
         self.config = {}
         pass
 
@@ -70,6 +81,20 @@ class Pipeline:
     def name_list(self):
         '''list of name of steps'''
         return [st.name for st in self.L]
+
+    def validate(self):
+        ''' Validates that parameters are passed in config
+        or `output_name`.
+        Throws error if not found'''
+        oset = {t.output_name for t in self.L}
+        for t in self.L:
+            for k in t.kparams:
+                b = k in self.config or k in oset
+                if not b:
+                    err_msg = 'Parameter not found in config or output names. \n'
+                    err_msg += 'In function '+t.name+' param ' + k
+                    raise RuntimeError(err_msg)
+        return
 
 
 def array_dict(arr):
