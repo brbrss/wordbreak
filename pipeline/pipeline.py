@@ -42,7 +42,9 @@ class Pipeline:
 
     def _call(self, st: Step):
         args = {t: self.config[st.kparams[t]] for t in st.kparams}
-        return st(args)
+        res = st(args)
+        self.config[st.output_name] = res
+        return res
 
     def run_from(self, name):
         flag = False
@@ -50,14 +52,27 @@ class Pipeline:
             if st.name == name:
                 flag = True
             if flag:
-                res = self._call(st)
-                self.config[st.output_name] = res
+                self._call(st)
+        return
+
+    def run_all(self):
+        for st in self.L:
+            self._call(st)
         return
 
     def run_one(self, name):
         for st in self.L:
             if st.name == name:
-                res = self._call(st)
-                self.config[st.output_name] = res
+                self._call(st)
                 return
         pass
+
+    def name_list(self):
+        '''list of name of steps'''
+        return [st.name for st in self.L]
+
+
+def array_dict(arr):
+    '''converts list of str to dict 
+    such that key and val are the same'''
+    return {s: s for s in arr}

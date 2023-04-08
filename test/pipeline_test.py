@@ -1,5 +1,5 @@
 
-from pipeline import Pipeline, Step
+from pipeline.pipeline import Pipeline, Step
 import unittest
 
 
