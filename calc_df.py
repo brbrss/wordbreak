@@ -19,8 +19,8 @@ def trie_dict(t: Trie, d=None, prefix=''):
     return dd
 
 
-# trie with net count
-trie: Trie = filepickle.load('output/net_trie.dump')
+# trie
+trie: Trie = filepickle.load('output/trie.dump')
 
 # first int is total term freq, second int is document freq
 tf_df: dict[str, tuple[int, int]] = trie_dict(trie)
