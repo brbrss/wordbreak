@@ -20,6 +20,7 @@ def gen_matrix(ntrie_fp, word_fp, data_fp, matrix_fp):
 
     passed = 0
     cur_thread = 0
+    cur_percent = 0
     word_matrix = numpy.zeros(shape=(nword, len_data))  # word, doc shape
     print('num of words: ', nword)
     print('num of doc: ', len_data)
@@ -27,9 +28,9 @@ def gen_matrix(ntrie_fp, word_fp, data_fp, matrix_fp):
     for tid in data:
         passed += 1
         if passed > 0.01*len_data:
-            cur_thread += 1
             passed = 0
-            print(cur_thread, '%')
+            cur_percent += 1
+            print(cur_percent, '%')
         t = data[tid]
         for k in range(len(t.post_list)):
             content = t.post_list[k].content
@@ -37,5 +38,7 @@ def gen_matrix(ntrie_fp, word_fp, data_fp, matrix_fp):
             for word in raw:
                 wid = word_index[word]
                 word_matrix[wid][cur_thread] += 1
-
+        cur_thread += 1
+        pass
+    print('finished generating matrix')
     filepickle.dump(word_matrix, matrix_fp)
