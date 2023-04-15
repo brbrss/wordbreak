@@ -12,7 +12,7 @@ def gen_freq(data_fp, output_folder, trie_fp, min_occ, sample_percent=0.03, pivo
     data = pickle.load(f)
     f.close()
 
-    BATCH_SIZE = 5 * 1000
+    BATCH_SIZE = 10 * 1000
     cm = MergeCorpusModel(BATCH_SIZE, output_folder)
     # tid, index of post, size of data so far
     text_key: list[tuple[int, int, int]] = []

@@ -87,13 +87,16 @@ class Pipeline:
         or `output_name`.
         Throws error if not found'''
         oset = {t.output_name for t in self.L}
+        used = set()
         for t in self.L:
             for k in t.kparams:
+                used.add(k)
                 b = k in self.config or k in oset
                 if not b:
                     err_msg = 'Parameter not found in config or output names. \n'
                     err_msg += 'In function '+t.name+' param ' + k
                     raise RuntimeError(err_msg)
+        print('unused config', set(self.config.keys()).difference(used))
         return
 
 

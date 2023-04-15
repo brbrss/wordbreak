@@ -67,5 +67,11 @@ class PipelinetList(unittest.TestCase):
         self.assertEqual(pipe.config['one'], 'xx')
 
 
+    def test_validate(self):
+        pipe = Pipeline()
+        pipe.set_config(d)
+        pipe.add('one', f3, {'a': 'd'})
+        pipe.validate()
+
 if __name__ == '__main__':
     unittest.main()

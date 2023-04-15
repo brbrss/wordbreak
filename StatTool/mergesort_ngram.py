@@ -60,7 +60,7 @@ class MergeCorpusModel(CorpusModel):
         return index, val-offset
 
     def gen_dump_name(self, start, end):
-        filename = 'to'+str(end)+'.pickle'
+        filename = 'to'+str(end)+'.pivot'
         return os.path.join(self.folder, filename)
 
     def _partial_pivot(self, start, end):
