@@ -187,3 +187,22 @@ def match_to_trie(s: str, t: Trie):
         else:
             i += 1
     return res
+
+def match_offset(s: str, t: Trie):
+    ''' match string to trie
+
+    Returns list of start,end of words occuring in string. 
+    A word is valid if the corresponding node in trie exists
+    and is valid'''
+
+    res = []
+    i = 0
+    len_s = len(s)
+    while i < len_s:
+        j = _match_to_trie(s, t, i)
+        if j > i:
+            res.append((i,j))
+            i = j
+        else:
+            i += 1
+    return res
