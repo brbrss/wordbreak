@@ -12,7 +12,8 @@ d = pipeline.array_dict(['data_fp', 'output_folder',
                         'trie_fp', 'min_occ', 'sample_percent', 'pivot_start',  'pivot_fp'])
 pipe.add('gen_freq', gen_freq, d)
 
-d = pipeline.array_dict(['data_fp', 'trie_fp', 'output_folder'])
+d = pipeline.array_dict(
+    ['data_fp', 'trie_fp', 'output_folder', 'break_fp', 'seg_nrun','max_temp'])
 pipe.add('gen_seg', gen_seg, d)
 
 
@@ -21,8 +22,6 @@ pipe.add('gen_seg', gen_seg, d)
 
 # d = pipeline.array_dict(['ntrie_fp', 'word_fp', 'data_fp', 'matrix_fp'])
 # pipe.add('gen_matrix', gen_matrix, d)
-
-
 
 
 config = {
@@ -55,6 +54,10 @@ config_small = {
 
     'trie_fp': 'spike/garbage/trie.dump',
     'ntrie_fp': 'spike/garbage/ntrie.dump',
+
+    'seg_nrun':10,
+    'break_fp': 'spike/garbage/b99.seg',
+    'max_temp': 1,
 
     'word_fp': 'spike/garbage/word.dump',
     'matrix_fp': 'spike/garbage/matrix.dump',

@@ -31,6 +31,7 @@ class Segmenter:
         self.TAU = 0.3
         self.ALPHA = 5000
         self.nchar = count_char(data)
+        self.nchanged = 0
 
     def from_trie(self, trie: Trie):
         for i in range(len(self.data)):
@@ -56,6 +57,7 @@ class Segmenter:
         return res
 
     def init_count(self):
+        self.nchanged = 0
         self.word_count.clear()
         self.nword = 0
         for i in range(len(self.data)):
@@ -105,7 +107,13 @@ class Segmenter:
         d = random.random()
         return d*total > p0
 
-    def anneal(self, i: int):
+    def gibbs(self):
+        self.init_count()
+        for i in range(len(self.data)):
+            self._anneal(i)
+        return
+
+    def _anneal(self, i: int):
         '''optimize word breaking for text entry at i'''
         s = self.data[i]
         b = self.b[i]
@@ -122,6 +130,7 @@ class Segmenter:
             p1 = self.prob(w1)*self.prob(w2)
             p0 = self.prob(w)
             on = self.sample(p0, p1)
+            self.nchanged += int(b[k] == on)
             b[k] = on
             if b[k]:
                 front = k
