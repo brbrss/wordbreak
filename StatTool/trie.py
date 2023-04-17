@@ -123,6 +123,16 @@ class Trie(object):
             self.children[c].traverse(s, cb)
         return
 
+    def invalidate_layer(self, n):
+        '''invalidate all nodes of depth <= n
+        i.e. str of len <= n'''
+        if n < 0:
+            return
+        self.valid = False
+        for c in self.children:
+            self.children[c].invalidate_layer(n-1)
+        return
+
 
 def _substract(d, s, val):
     for i in range(0, len(s)+1):
@@ -188,6 +198,7 @@ def match_to_trie(s: str, t: Trie):
             i += 1
     return res
 
+
 def match_offset(s: str, t: Trie):
     ''' match string to trie
 
@@ -201,7 +212,7 @@ def match_offset(s: str, t: Trie):
     while i < len_s:
         j = _match_to_trie(s, t, i)
         if j > i:
-            res.append((i,j))
+            res.append((i, j))
             i = j
         else:
             i += 1
