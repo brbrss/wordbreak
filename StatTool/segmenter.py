@@ -33,6 +33,12 @@ class Segmenter:
         self.nchar = count_char(data)
         self.nchanged = 0
 
+    def num_unique(self):
+        return len(self.word_count)
+
+    def num_word(self):
+        return self.nword
+
     def from_trie(self, trie: Trie):
         for i in range(len(self.data)):
             s = self.data[i]
@@ -81,9 +87,14 @@ class Segmenter:
         return math.pow(1-self.TAU, n-1)*self.TAU*math.pow(1/self.nchar, n)
 
     def prob(self, w):
+        ''' 
+        unigram probability P(w|text)
+        '''
         nw = self.word_count[w]
         pw = self.intrinsic_prob(w)
-        return (nw+self.ALPHA*pw)/(self.nword+self.ALPHA)
+        nw = max(0, nw-1)
+        nt = max(0, self.nword-1)
+        return (nw+self.ALPHA*pw)/(nt+self.ALPHA)
 
     def turn_on(self, w1, w2, w):
         self.word_count[w] -= 1
@@ -118,7 +129,7 @@ class Segmenter:
         s = self.data[i]
         b = self.b[i]
         front = 0
-        start = 0
+
         back = 0
         w = s[front:back]
         for k in range(1, len(b)):
@@ -135,8 +146,4 @@ class Segmenter:
             if b[k]:
                 front = k
                 w = s[front:back]
-        if start != len(b):
-            word = s[start:]
-            self.word_count[word] += 1
-            self.nword += 1
         return
