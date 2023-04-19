@@ -86,14 +86,17 @@ class Segmenter:
         n = len(w)
         return math.pow(1-self.TAU, n-1)*self.TAU*math.pow(1/self.nchar, n)
 
-    def prob(self, w):
+    def prob(self, w, w_sub, n_sub):
         ''' 
         unigram probability P(w|text)
+
+        w_sub: correction of word count
+        n_sub: correction of total count
         '''
         nw = self.word_count[w]
         pw = self.intrinsic_prob(w)
-        nw = max(0, nw-1)
-        nt = max(0, self.nword-1)
+        nw = nw - w_sub
+        nt = self.nword - n_sub
         return (nw+self.ALPHA*pw)/(nt+self.ALPHA)
 
     def turn_on(self, w1, w2, w):
@@ -138,10 +141,17 @@ class Segmenter:
                 w = s[front:back]
             w1 = s[front:k]
             w2 = s[k:back]
-            p1 = self.prob(w1)*self.prob(w2)
-            p0 = self.prob(w)
+            cur_on = b[k]
+            n_sub = cur_on+1
+            p1 = self.prob(w1, cur_on, n_sub) * \
+                self.prob(w2, cur_on-int(w1 == w2), n_sub)
+            p0 = self.prob(w, 1-cur_on, n_sub)
             on = self.sample(p0, p1)
             self.nchanged += int(b[k] == on)
+            if b[k] and not on:
+                self.turn_off(w1, w2, w)
+            elif not b[k] and on:
+                self.turn_on(w1, w2, w)
             b[k] = on
             if b[k]:
                 front = k
