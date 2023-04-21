@@ -1,11 +1,11 @@
 import pipeline.pipeline as pipeline
 from pipeline.gen_freq import gen_freq
-from pipeline.gen_matrix import gen_matrix
+
 from pipeline.gen_word_list import gen_word_list
 from pipeline.gen_seg import gen_seg
 from pipeline.word_count import word_count
-#from pipeline.purge_word import purge_word
-
+from pipeline.seg_word_count import seg_word_count
+from pipeline.seg_matrix import seg_matrix
 
 pipe = pipeline.Pipeline()
 
@@ -15,16 +15,17 @@ d = pipeline.array_dict(['data_fp', 'output_folder',
 pipe.add('gen_freq', gen_freq, d)
 
 d = pipeline.array_dict(
-    ['data_fp', 'trie_fp', 'output_folder', 'break_fp', 'seg_nrun','max_temp'])
+    ['data_fp', 'trie_fp', 'break_fp', 'seg_nrun'])
 pipe.add('gen_seg', gen_seg, d)
 
 
-#d = pipeline.array_dict(['trie_fp', 'ntrie_fp', 'word_fp'])
-#pipe.add('gen_word_list', gen_word_list, d)
 
-# d = pipeline.array_dict(['ntrie_fp', 'word_fp', 'data_fp', 'count_fp'])
-# pipe.add('word_count', word_count, d)
 
+d = pipeline.array_dict(['data_fp', 'break_fp', 'min_occ', 'word_fp'])
+pipe.add('seg_word_count', seg_word_count, d)
+
+d = pipeline.array_dict(['data_fp', 'break_fp', 'word_fp', 'word_fp'])
+pipe.add('seg_matrix', seg_matrix, d)
 
 # d = pipeline.array_dict(['ntrie_fp', 'word_fp', 'data_fp', 'matrix_fp'])
 # pipe.add('gen_matrix', gen_matrix, d)
@@ -64,8 +65,8 @@ config_small = {
     'ntrie_fp': 'spike/garbage/ntrie.dump',
 
     'seg_nrun': 100,
-    'break_fp': None,
-    'max_temp': 1,
+    'break_fp': 'spike/garbage/break.dump',
+
 
     'word_fp': 'spike/garbage/word.dump',
     'count_fp': 'spike/garbage/count.dump',
