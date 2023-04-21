@@ -2,7 +2,7 @@
 import time
 import filepickle
 from StatTool.trie import Trie
-from StatTool.segmenter import Segmenter
+from StatTool.fast_seg import FastSeg,Segmenter
 import os.path
 import random
 
@@ -27,7 +27,7 @@ def gen_seg(data_fp, trie_fp, output_folder, break_fp, seg_nrun=50, max_temp=1):
         for p in t.post_list:
             content = p.content
             d.append(content)
-    seg = Segmenter(d)
+    seg = FastSeg(d)
     del d
     if break_fp:
         seg.b = filepickle.load(break_fp)
@@ -41,15 +41,16 @@ def gen_seg(data_fp, trie_fp, output_folder, break_fp, seg_nrun=50, max_temp=1):
 
     max_t = max_temp  # >1
     seg.TAU = 0.5
-    seg.ALPHA = 20
+    seg.ALPHA = 3000
     for i in range(seg_nrun):
-        seg.temperature = max_t - i/seg_nrun*(max_t-1)
-        print('annealing t=', seg.temperature, ' rounds:', nround)
+        #seg.temperature = max_t - i/seg_nrun*(max_t-1)
+        seg.temperature = 1
+        print('annealing t=', seg.temperature, ' round:', i)
         seg.gibbs()
         show_info(seg)
 
     seg.temperature = 0
-    print('annealing t=', seg.temperature, ' rounds:', nround)
+    print('annealing t=', seg.temperature, ' round:', i)
     seg.gibbs()
     show_info(seg)
 

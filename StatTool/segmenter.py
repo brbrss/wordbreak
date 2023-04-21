@@ -121,11 +121,7 @@ class Segmenter:
         d = random.random()
         return d*total > p0
 
-    def gibbs(self):
-        self.init_count()
-        for i in range(len(self.data)):
-            self._anneal(i)
-        return
+
 
     def _anneal(self, i: int):
         '''optimize word breaking for text entry at i'''
@@ -157,3 +153,10 @@ class Segmenter:
                 front = k
                 w = s[front:back]
         return
+
+    def show_info(self):
+        n = len(self.word_count)
+        print('words: ', self.nword)
+        print('unique: ', n)
+        print('nchanged: ',self.nchanged)
+        

@@ -4,7 +4,7 @@ from pipeline.gen_matrix import gen_matrix
 from pipeline.gen_word_list import gen_word_list
 from pipeline.gen_seg import gen_seg
 from pipeline.word_count import word_count
-from pipeline.split_word import split_word
+#from pipeline.purge_word import purge_word
 
 
 pipe = pipeline.Pipeline()
@@ -14,23 +14,23 @@ d = pipeline.array_dict(['data_fp', 'output_folder',
                         'trie_fp', 'min_occ', 'sample_percent', 'pivot_start',  'pivot_fp'])
 pipe.add('gen_freq', gen_freq, d)
 
-# d = pipeline.array_dict(
-#     ['data_fp', 'trie_fp', 'output_folder', 'break_fp', 'seg_nrun','max_temp'])
-# pipe.add('gen_seg', gen_seg, d)
+d = pipeline.array_dict(
+    ['data_fp', 'trie_fp', 'output_folder', 'break_fp', 'seg_nrun','max_temp'])
+pipe.add('gen_seg', gen_seg, d)
 
 
-d = pipeline.array_dict(['trie_fp', 'ntrie_fp', 'word_fp'])
-pipe.add('gen_word_list', gen_word_list, d)
+#d = pipeline.array_dict(['trie_fp', 'ntrie_fp', 'word_fp'])
+#pipe.add('gen_word_list', gen_word_list, d)
 
-d = pipeline.array_dict(['ntrie_fp', 'word_fp', 'data_fp', 'count_fp'])
-pipe.add('word_count', word_count, d)
+# d = pipeline.array_dict(['ntrie_fp', 'word_fp', 'data_fp', 'count_fp'])
+# pipe.add('word_count', word_count, d)
 
-d = pipeline.array_dict(['word_fp', 'count_fp', 'net_count_fp'])
-pipe.add('split_word', split_word, d)
 
 # d = pipeline.array_dict(['ntrie_fp', 'word_fp', 'data_fp', 'matrix_fp'])
 # pipe.add('gen_matrix', gen_matrix, d)
 
+# d = pipeline.array_dict(['matrix_fp','index_fp'])
+# pipe.add('purge_word', purge_word, d)
 
 config = {
     'data_fp': 'data/post.pickle',
@@ -63,9 +63,9 @@ config_small = {
     'trie_fp': 'spike/garbage/trie.dump',
     'ntrie_fp': 'spike/garbage/ntrie.dump',
 
-    'seg_nrun': 10,
+    'seg_nrun': 100,
     'break_fp': None,
-    'max_temp': 5,
+    'max_temp': 1,
 
     'word_fp': 'spike/garbage/word.dump',
     'count_fp': 'spike/garbage/count.dump',
@@ -83,4 +83,4 @@ config_small = {
 
 pipe.set_config(config_small)
 pipe.validate()
-pipe.run_from('split_word')
+pipe.run_from('gen_seg')
