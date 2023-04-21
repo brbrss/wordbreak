@@ -5,9 +5,8 @@ import numpy as np
 from ParseTool import model
 
 
-
-
 def seg_matrix(data_fp, break_fp, word_fp, matrix_fp):
+    print('creating word matrix')
     data: dict[int, model.ThreadModel] = filepickle.load(data_fp)
     wlist = filepickle.load(word_fp)
     nword = len(wlist)
@@ -17,7 +16,8 @@ def seg_matrix(data_fp, break_fp, word_fp, matrix_fp):
     b = filepickle.load(break_fp)
     p_pos = 0
     t_pos = 0
-    for tid in range(len(data)):
+    print('finished loading, start populating matrix')
+    for tid in data:
         t = data[tid]
         d = []
         plist = []
@@ -31,6 +31,7 @@ def seg_matrix(data_fp, break_fp, word_fp, matrix_fp):
         for w in seg.word_count:
             if w in word_index:
                 w_pos = word_index[w]
-                word_matrix[w_pos][t_pos]
+                word_matrix[w_pos][t_pos] += seg.word_count[w]
         t_pos += 1
     filepickle.dump(word_matrix, matrix_fp)
+    print('finished populating matrix')

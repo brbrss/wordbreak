@@ -24,7 +24,7 @@ pipe.add('gen_seg', gen_seg, d)
 d = pipeline.array_dict(['data_fp', 'break_fp', 'min_occ', 'word_fp'])
 pipe.add('seg_word_count', seg_word_count, d)
 
-d = pipeline.array_dict(['data_fp', 'break_fp', 'word_fp', 'word_fp'])
+d = pipeline.array_dict(['data_fp', 'break_fp', 'word_fp', 'matrix_fp'])
 pipe.add('seg_matrix', seg_matrix, d)
 
 # d = pipeline.array_dict(['ntrie_fp', 'word_fp', 'data_fp', 'matrix_fp'])
@@ -84,4 +84,4 @@ config_small = {
 
 pipe.set_config(config_small)
 pipe.validate()
-pipe.run_from('gen_seg')
+pipe.run_from('seg_word_count')

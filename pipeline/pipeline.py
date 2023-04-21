@@ -7,6 +7,7 @@ class Step:
         self.f = f
         self.kparams = kparams
         self.output_name = output_name
+        self._validate()
 
     def _validate(self):
         sig = signature(self.f)
