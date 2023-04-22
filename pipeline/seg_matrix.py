@@ -3,6 +3,7 @@ import filepickle
 from StatTool.fast_seg import FastSeg
 import numpy as np
 from ParseTool import model
+import scipy.sparse
 
 
 def seg_matrix(data_fp, break_fp, word_fp, matrix_fp):
@@ -11,7 +12,7 @@ def seg_matrix(data_fp, break_fp, word_fp, matrix_fp):
     wlist = filepickle.load(word_fp)
     nword = len(wlist)
     len_data = len(data)
-    word_matrix = np.zeros(shape=(nword, len_data))  # word, doc shape
+    word_matrix = scipy.sparse.lil_matrix((nword, len_data))  # word, doc shape
     word_index = {wlist[i]: i for i in range(nword)}
     b = filepickle.load(break_fp)
     p_pos = 0
@@ -31,7 +32,8 @@ def seg_matrix(data_fp, break_fp, word_fp, matrix_fp):
         for w in seg.word_count:
             if w in word_index:
                 w_pos = word_index[w]
-                word_matrix[w_pos][t_pos] += seg.word_count[w]
+                word_matrix[w_pos, t_pos] += seg.word_count[w]
         t_pos += 1
-    filepickle.dump(word_matrix, matrix_fp)
+    word_csc = word_matrix.tocsc()
+    filepickle.dump(word_csc, matrix_fp)
     print('finished populating matrix')

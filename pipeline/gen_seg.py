@@ -19,7 +19,7 @@ def show_info(seg: Segmenter):
     print('nchanged: ', seg.nchanged)
 
 
-def gen_seg(data_fp, trie_fp,  break_fp, seg_nrun=50):
+def gen_seg(data_fp, trie_fp, output_folder, partial_break, break_fp, max_temp, n_start=0, seg_nrun=50):
     print('generating word break')
     data = filepickle.load(data_fp)
     d = []
@@ -31,26 +31,30 @@ def gen_seg(data_fp, trie_fp,  break_fp, seg_nrun=50):
     seg = FastSeg(d)
     del d
 
-    trie: Trie = filepickle.load(trie_fp)
-    trie.invalidate_layer(1)
-    seg.from_trie(trie)
-    del trie
+    if partial_break:
+        seg.b = filepickle.load(partial_break)
+    else:
+        trie: Trie = filepickle.load(trie_fp)
+        trie.invalidate_layer(1)
+        seg.from_trie(trie)
+        del trie
 
     ndata = len(seg.data)
     nround = ndata
-
-
+    max_t = max_temp
     seg.TAU = 0.5
-    seg.ALPHA = 3000
-    for i in range(seg_nrun):
+    seg.ALPHA = 15000
+    for i in range(n_start, seg_nrun):
         #seg.temperature = max_t - i/seg_nrun*(max_t-1)
-        seg.temperature = 1
+        #seg.temperature = 1
+        seg.temperature = max_t
         print('annealing t=', seg.temperature, ' round:', i)
         seg.gibbs()
         show_info(seg)
+        filepickle.dump(seg.b, fname(output_folder, i))
 
     seg.temperature = 0
-    print('annealing t=', seg.temperature, ' round:', i)
+    print('annealing t=', seg.temperature, ' round:', seg_nrun)
     seg.gibbs()
     show_info(seg)
 

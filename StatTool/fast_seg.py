@@ -39,7 +39,7 @@ class FastSeg(Segmenter):
             p1 = self.prob(w1) * self.prob(w2)
             p0 = self.prob(w)
             on = self.sample(p0, p1)
-            self.nchanged += int(b[k] == on)
+            #self.nchanged += int(b[k] == on)
 
             b[k] = on
             if b[k]:
