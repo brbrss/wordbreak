@@ -31,7 +31,7 @@ d = pipeline.array_dict(
 pipe.add('reduce_word', reduce_word, d)
 #####
 d = pipeline.array_dict(
-    ['reduced_matrix_fp', 'word_embed_fp'])
+    ['reduced_matrix_fp', 'pca_dim','word_embed_fp'])
 pipe.add('calc_pca', calc_pca, d)
 
 
@@ -58,6 +58,7 @@ config = {
     'reduced_matrix_fp': 'output/rmatrix.dump',
     'reduced_word_fp': 'output/rword.dump',
 
+    'pca_dim':64,
     'word_embed_fp': 'output/embed.dump'
 }
 
@@ -85,13 +86,14 @@ config_small = {
     'reduced_matrix_fp': 'spike/garbage/rmatrix.dump',
     'reduced_word_fp': 'spike/garbage/rword.dump',
 
+    'pca_dim':64,
     'word_embed_fp': 'spike/garbage/embed.dump'
 }
 
 
 pipe.set_config(config)
 pipe.validate()
-pipe.run_from('reduce_word')
+pipe.run_from('calc_pca')
 
 
 # pipe.set_config(config_small)
