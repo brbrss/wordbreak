@@ -21,10 +21,18 @@ class TestTopheap(unittest.TestCase):
         target = set(d.keys())
         self.assertSetEqual(set(h.data()), target)
 
-    def test_insert_more(self):
+    def test_replace(self):
         h = helper.topheap.TopHeap(2)
-        d = {'t': 6, 'w': 5, 'a': 9}
+        d = {'t': 6, 'w': 5, 'a': 9,'v':3}
         for k in d:
             h.push(k, d[k])
         target = set(['t','a'])
+        self.assertSetEqual(set(h.data()), target)
+
+    def test_insert_more(self):
+        h = helper.topheap.TopHeap(2)
+        d = {'t': 6, 'w': 5, 'a': 9,'v':3,'u':5,'m':10,'n':11}
+        for k in d:
+            h.push(k, d[k])
+        target = set(['m','n'])
         self.assertSetEqual(set(h.data()), target)

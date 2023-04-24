@@ -26,7 +26,9 @@ class TopHeap:
         if len(self) < self.max_size:
             heapq.heappush(self.arr, x)
         else:
-            heapq.heapreplace(self.arr, x)
+            if v>self.arr[0].v:
+                heapq.heapreplace(self.arr, x)
+        return
 
     def data(self):
         return [t.k for t in self.arr]
