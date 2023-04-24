@@ -13,13 +13,16 @@ class _Item:
 
 
 class TopHeap:
-    '''data structure for storing top n elements'''
+    '''data structure for storing largest n elements'''
     def __init__(self, max_size: int):
         self.max_size = max_size
         self.arr: list[_Item] = []
 
     def __len__(self):
         return len(self.arr)
+
+    def clear(self):
+        self.arr.clear()
 
     def push(self, k, v):
         x = _Item(k, v)
