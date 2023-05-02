@@ -22,6 +22,9 @@ def a(ndim, kappa):
     return _a/(_b*_c)
 
 
+
+
+
 class SphereEm:
     def __init__(self, data, k):
         ndata, ndim = data.shape
@@ -42,7 +45,7 @@ class SphereEm:
         pass
 
     def logpdf(self, x, k):
-        normalizer = a(self.ndim,self.kappa[k])
+        normalizer = a(self.ndim, self.kappa[k])
         d = np.dot(x, self.m[k])
         return self.kappa[k] * d + np.log(normalizer)
 
@@ -52,7 +55,7 @@ class SphereEm:
         for i in range(self.k):
             E_log_p = scipy.special.digamma(self.pa[i])-di0
             normalizer = a(self.ndim, self.kappa[i])
-            logp = self.logpdf(self.data,i)
+            logp = self.logpdf(self.data, i)
             self.z[:, i] = np.exp(logp+E_log_p)
         ns = np.sum(self.z, axis=1)
         for i in range(self.n):
@@ -73,7 +76,8 @@ class SphereEm:
             self.m[i] = v
             a = 10
             estk = r*(self.ndim-r*r)/(1.001-r*r)
-            self.kappa[i] = (estk*clu_n+1*a)/(a+clu_n)
+            # limit range of kappa so normalizer is numerically stable
+            self.kappa[i] = min((estk*clu_n+1*a)/(a+clu_n), 150)
             #self.kappa[i] = 1/(0.01+r)
 
     def update(self):
@@ -84,3 +88,4 @@ class SphereEm:
     def output(self):
         zi = np.argmax(self.z, axis=1)
         return zi
+

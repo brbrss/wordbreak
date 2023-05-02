@@ -7,8 +7,8 @@ from pipeline.seg_word_count import seg_word_count
 from pipeline.seg_matrix import seg_matrix
 from pipeline.reduce_word import reduce_word
 from pipeline.calc_pca import calc_pca
-from pipeline.kde_cluster import kde
 
+from pipeline.cluster import cluster
 
 pipe = pipeline.Pipeline()
 
@@ -35,10 +35,11 @@ d = pipeline.array_dict(
     ['reduced_matrix_fp', 'pca_dim', 'word_embed_fp'])
 pipe.add('calc_pca', calc_pca, d)
 #####
-
 d = pipeline.array_dict(
-    ['word_embed_fp', 'center_fp'])
-pipe.add('kde', kde, d)
+    ['word_embed_fp', 'cluster_fp'])
+pipe.add('cluster', cluster, d)
+
+
 
 config = {
     'data_fp': 'data/post.pickle',
@@ -64,7 +65,9 @@ config = {
     'reduced_word_fp': 'output/rword.dump',
 
     'pca_dim': 64,
-    'word_embed_fp': 'output/embed.dump'
+    'word_embed_fp': 'output/embed.dump',
+    'cluster_fp': 'output/cluster.dump'
+
 }
 
 
@@ -94,15 +97,15 @@ config_small = {
     'pca_dim': 64,
     'word_embed_fp': 'spike/garbage/embed.dump',
     'dist_fp': 'spike/garbage/wdist.dump',
-    'center_fp': 'spike/garbage/center.dump'
+    'cluster_fp': 'spike/garbage/cluster.dump'
 }
 
 
-# pipe.set_config(config)
-# pipe.validate()
-# pipe.run_from('calc_pca')
-
-
-pipe.set_config(config_small)
+pipe.set_config(config)
 pipe.validate()
-pipe.run_from('kde')
+pipe.run_from('cluster')
+
+
+# pipe.set_config(config_small)
+# pipe.validate()
+# pipe.run_from('kde')
