@@ -95,7 +95,7 @@ class Pipeline:
                 b = k in self.config or k in oset
                 if not b:
                     err_msg = 'Parameter not found in config or output names. \n'
-                    err_msg += 'In function '+t.name+' param ' + k
+                    err_msg += 'In function: '+t.name+', param: ' + k
                     raise RuntimeError(err_msg)
         print('unused config', set(self.config.keys()).difference(used))
         return

@@ -1,7 +1,7 @@
 import numpy as np
 
 import scipy.special
-np.seterr(all='raise')
+
 
 
 def rand_uv(nsize, ndim):

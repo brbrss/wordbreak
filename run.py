@@ -9,6 +9,8 @@ from pipeline.reduce_word import reduce_word
 from pipeline.calc_pca import calc_pca
 
 from pipeline.cluster import cluster
+from pipeline.find_topic import find_topic
+
 
 pipe = pipeline.Pipeline()
 
@@ -38,7 +40,10 @@ pipe.add('calc_pca', calc_pca, d)
 d = pipeline.array_dict(
     ['word_embed_fp', 'cluster_fp'])
 pipe.add('cluster', cluster, d)
-
+#####
+d = pipeline.array_dict(
+    ['reduced_matrix_fp', 'topic_fp'])
+pipe.add('find_topic', find_topic, d)
 
 
 config = {
@@ -66,8 +71,8 @@ config = {
 
     'pca_dim': 64,
     'word_embed_fp': 'output/embed.dump',
-    'cluster_fp': 'output/cluster.dump'
-
+    'cluster_fp': 'output/cluster.dump',
+    'topic_fp': 'ouput/topic'
 }
 
 
@@ -97,15 +102,16 @@ config_small = {
     'pca_dim': 64,
     'word_embed_fp': 'spike/garbage/embed.dump',
     'dist_fp': 'spike/garbage/wdist.dump',
-    'cluster_fp': 'spike/garbage/cluster.dump'
+    'cluster_fp': 'spike/garbage/cluster.dump',
+    'topic_fp':'spike/garbage/topic.dump'
 }
 
 
-pipe.set_config(config)
-pipe.validate()
-pipe.run_from('cluster')
-
-
-# pipe.set_config(config_small)
+# pipe.set_config(config)
 # pipe.validate()
-# pipe.run_from('kde')
+# pipe.run_from('find_topic')
+
+
+pipe.set_config(config_small)
+pipe.validate()
+pipe.run_one('find_topic')
