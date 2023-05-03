@@ -107,11 +107,11 @@ config_small = {
 }
 
 
-# pipe.set_config(config)
-# pipe.validate()
-# pipe.run_from('find_topic')
-
-
-pipe.set_config(config_small)
+pipe.set_config(config)
 pipe.validate()
-pipe.run_one('find_topic')
+pipe.run_from('find_topic')
+
+
+# pipe.set_config(config_small)
+# pipe.validate()
+# pipe.run_one('find_topic')

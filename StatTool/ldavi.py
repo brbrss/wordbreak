@@ -21,20 +21,22 @@ class Ldavi:
         self.beta_copy = self._create_beta_array()
 
         # auxilliary
-        self.nu_di = np.zeros(ndoc)
-        self.beta_di = np.zeros(nword)
+        self.elogp_nu=np.zeros(self.nu.shape)
+        self.elogp_beta = np.zeros(self.beta.shape)
         return
 
     def _init_auxiliary(self):
         self.beta_copy = self._create_beta_array()
-        self.nu_di = self._create_nu_di()
-        self.beta_di = self._create_beta_di()
+        self._create_nu_di()
+        self._create_beta_di()
 
     def _create_nu_di(self):
-        return scipy.special.digamma(np.sum(self.nu, axis=1))
+        di_total = scipy.special.digamma(np.sum(self.nu, axis=1))
+        self.elogp_nu = scipy.special.digamma(self.nu)-di_total[:,None]
 
     def _create_beta_di(self):
-        return scipy.special.digamma(np.sum(self.beta, axis=1))
+        di_total= scipy.special.digamma(np.sum(self.beta, axis=1))
+        self.elogp_beta = scipy.special.digamma(self.beta)-di_total[:,None]
 
     def _create_beta_array(self):
         return np.full(
@@ -61,9 +63,7 @@ class Ldavi:
     def update_z(self, i, doc):
         # z[n][k] = P(z=k|count word_n at doc)
         def get_logz(n, k):
-            elogp_pi = scipy.special.digamma(self.nu[i][k])-self.nu_di[i]
-            elogp_b = scipy.special.digamma(self.beta[k][n])-self.beta_di[k]
-            return elogp_pi+elogp_b
+            return self.elogp_nu[i][k]+self.elogp_beta[k][n]
 
         # q(cluster|word)
         shape = (self.nword, self.ncluster)
