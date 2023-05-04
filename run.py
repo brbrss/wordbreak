@@ -42,7 +42,7 @@ d = pipeline.array_dict(
 pipe.add('cluster', cluster, d)
 #####
 d = pipeline.array_dict(
-    ['reduced_matrix_fp', 'topic_fp'])
+    ['reduced_matrix_fp', 'topic_fp','topic_con_fp'])
 pipe.add('find_topic', find_topic, d)
 
 
@@ -72,7 +72,8 @@ config = {
     'pca_dim': 64,
     'word_embed_fp': 'output/embed.dump',
     'cluster_fp': 'output/cluster.dump',
-    'topic_fp': 'ouput/topic'
+    'topic_fp': 'output/topic.dump',
+    'topic_con_fp':'output/lda2.dump'
 }
 
 
