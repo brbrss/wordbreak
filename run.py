@@ -42,7 +42,7 @@ d = pipeline.array_dict(
 pipe.add('cluster', cluster, d)
 #####
 d = pipeline.array_dict(
-    ['reduced_matrix_fp', 'topic_fp','topic_con_fp'])
+    ['reduced_matrix_fp', 'topic_fp','itnum','topic_con_fp'])
 pipe.add('find_topic', find_topic, d)
 
 
@@ -73,7 +73,8 @@ config = {
     'word_embed_fp': 'output/embed.dump',
     'cluster_fp': 'output/cluster.dump',
     'topic_fp': 'output/topic.dump',
-    'topic_con_fp':'output/lda8.dump'
+    'itnum':700,
+    'topic_con_fp':'output/lda12.dump'
 }
 
 
@@ -105,6 +106,7 @@ config_small = {
     'dist_fp': 'spike/garbage/wdist.dump',
     'cluster_fp': 'spike/garbage/cluster.dump',
     'topic_fp':'spike/garbage/topic.dump',
+    'itnum':50,
     'topic_con_fp':None
 
 }

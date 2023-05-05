@@ -64,7 +64,7 @@ class Ldavi:
         self._init_auxiliary()
         total_counter = 0
         for i in doc_list:
-            #print_progress(total_counter, self.ndoc)
+            print_progress(total_counter, self.ndoc)
             total_counter += 1
             self.update_doc(i)
             doc = self._doc(i)

@@ -25,6 +25,14 @@ for i in range(ndoc):
 
 nclu = 5
 data = scipy.sparse.csr_matrix(data)
+
+m = data.toarray()
+mean = m.mean(axis=1)
+m = m - mean[:, np.newaxis]
+u, s, v = scipy.sparse.linalg.svds(m, k=ncluster)
+
+c = np.matmul(m, v.T)
+
 lda = Ldavi(data, nclu)
 lda.nu=np.ones(shape=lda.nu.shape)*2000
 

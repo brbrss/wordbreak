@@ -5,7 +5,7 @@ import os.path
 ncluster = 128
 
 
-def find_topic(reduced_matrix_fp, topic_fp, topic_con_fp=None):
+def find_topic(reduced_matrix_fp, topic_fp, itnum=50, topic_con_fp=None):
     print('lda clustering')
     data = filepickle.load(reduced_matrix_fp)
     lda = Ldavi(data, ncluster)
@@ -20,7 +20,7 @@ def find_topic(reduced_matrix_fp, topic_fp, topic_con_fp=None):
         except Exception:
             pass
 
-    itnum = 300
+    #itnum = 300
     for i in range(start, 40):
         print('round ', i)
         itnum = lda.update_random(itnum)
