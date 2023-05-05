@@ -71,7 +71,8 @@ config = {
 
     'pca_dim': 64,
     'word_embed_fp': 'output/embed.dump',
-    'cluster_fp': 'output/cluster.dump',
+    'cluster_fp': 'output/clu.dump',
+
     'topic_fp': 'output/topic.dump',
     'itnum':700,
     'topic_con_fp':'output/lda12.dump'
@@ -105,6 +106,7 @@ config_small = {
     'word_embed_fp': 'spike/garbage/embed.dump',
     'dist_fp': 'spike/garbage/wdist.dump',
     'cluster_fp': 'spike/garbage/cluster.dump',
+
     'topic_fp':'spike/garbage/topic.dump',
     'itnum':50,
     'topic_con_fp':None
@@ -114,7 +116,7 @@ config_small = {
 
 pipe.set_config(config)
 pipe.validate()
-pipe.run_from('find_topic')
+pipe.run_one('cluster')
 
 
 # pipe.set_config(config_small)

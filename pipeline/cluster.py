@@ -4,7 +4,7 @@ import numpy as np
 from helper import print_progress
 
 
-ncluster = 256
+ncluster = 64
 
 
 def cluster(word_embed_fp, cluster_fp):
@@ -21,6 +21,7 @@ def cluster(word_embed_fp, cluster_fp):
     for i in range(nrun):
         print_progress.print_progress(i, nrun)
         em.update()
+        em.equalize_kappa()
     zi = em.output()
 
     word_group = {}
@@ -31,4 +32,5 @@ def cluster(word_embed_fp, cluster_fp):
         word_group[k].append(i)
 
     filepickle.dump(word_group, cluster_fp)
+    filepickle.dump(em.m, 'output/cludir.d')
     return

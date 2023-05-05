@@ -3,7 +3,6 @@ import numpy as np
 import scipy.special
 
 
-
 def rand_uv(nsize, ndim):
     shape = [nsize, ndim]
     v = np.random.normal(0, 1, shape)
@@ -20,9 +19,6 @@ def a(ndim, kappa):
     # modified Bessel function of the first kind at order
     _c = scipy.special.iv(v-1, kappa)
     return _a/(_b*_c)
-
-
-
 
 
 class SphereEm:
@@ -86,6 +82,16 @@ class SphereEm:
         self.update_z()
 
     def output(self):
+        '''returns array of result
+        ret[i] is group index of i-th word
+
+        words with the same group index are in the same cluster
+        '''
         zi = np.argmax(self.z, axis=1)
         return zi
 
+    def equalize_kappa(self):
+        zn = (self.pa-self.prior)
+        zp = zn/sum(zn)
+        mk = np.sum(self.kappa*zp) # mean kappa
+        self.kappa.fill(mk)
