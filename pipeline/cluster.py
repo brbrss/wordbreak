@@ -21,7 +21,7 @@ def cluster(word_embed_fp, cluster_fp):
     for i in range(nrun):
         print_progress.print_progress(i, nrun)
         em.update()
-        em.equalize_kappa()
+        #em.equalize_kappa()
     zi = em.output()
 
     word_group = {}
