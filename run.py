@@ -73,7 +73,7 @@ config = {
     'word_embed_fp': 'output/embed.dump',
     'cluster_fp': 'output/cluster.dump',
     'topic_fp': 'output/topic.dump',
-    'topic_con_fp':'output/lda2.dump'
+    'topic_con_fp':'output/lda8.dump'
 }
 
 
@@ -104,7 +104,9 @@ config_small = {
     'word_embed_fp': 'spike/garbage/embed.dump',
     'dist_fp': 'spike/garbage/wdist.dump',
     'cluster_fp': 'spike/garbage/cluster.dump',
-    'topic_fp':'spike/garbage/topic.dump'
+    'topic_fp':'spike/garbage/topic.dump',
+    'topic_con_fp':None
+
 }
 
 

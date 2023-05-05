@@ -20,9 +20,10 @@ def find_topic(reduced_matrix_fp, topic_fp, topic_con_fp=None):
         except Exception:
             pass
 
+    itnum = 300
     for i in range(start, 40):
         print('round ', i)
-        lda.update()
+        itnum = lda.update_random(itnum)
         obj = (lda.nu, lda.beta)
         fp = os.path.join(os.path.dirname(topic_fp), 'lda'+str(i)+'.dump')
         filepickle.dump(obj, fp)
