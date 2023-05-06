@@ -10,6 +10,7 @@ from pipeline.calc_pca import calc_pca
 
 from pipeline.cluster import cluster
 from pipeline.find_topic import find_topic
+from pipeline.user_count import user_count
 
 
 pipe = pipeline.Pipeline()
@@ -42,8 +43,12 @@ d = pipeline.array_dict(
 pipe.add('cluster', cluster, d)
 #####
 d = pipeline.array_dict(
-    ['reduced_matrix_fp', 'topic_fp','itnum','topic_con_fp'])
+    ['reduced_matrix_fp', 'topic_fp', 'itnum', 'topic_con_fp'])
 pipe.add('find_topic', find_topic, d)
+#####
+d = pipeline.array_dict(
+    ['data_fp', 'break_fp', 'reduced_word_fp', 'user_count_fp'])
+pipe.add('user_count', user_count, d)
 
 
 config = {
@@ -74,8 +79,10 @@ config = {
     'cluster_fp': 'output/clu.dump',
 
     'topic_fp': 'output/topic.dump',
-    'itnum':700,
-    'topic_con_fp':'output/lda12.dump'
+    'itnum': 700,
+    'topic_con_fp': 'output/lda12.dump',
+
+    'user_count_fp':'output/user_count.d'
 }
 
 
@@ -107,9 +114,11 @@ config_small = {
     'dist_fp': 'spike/garbage/wdist.dump',
     'cluster_fp': 'spike/garbage/cluster.dump',
 
-    'topic_fp':'spike/garbage/topic.dump',
-    'itnum':50,
-    'topic_con_fp':None
+    'topic_fp': 'spike/garbage/topic.dump',
+    'itnum': 50,
+    'topic_con_fp': None,
+
+      'user_count_fp':'spike/garbage/user_count.d'
 
 }
 
@@ -121,4 +130,4 @@ pipe.run_one('cluster')
 
 # pipe.set_config(config_small)
 # pipe.validate()
-# pipe.run_one('find_topic')
+# pipe.run_one('user_count')

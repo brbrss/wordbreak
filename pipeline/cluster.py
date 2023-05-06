@@ -4,7 +4,7 @@ import numpy as np
 from helper import print_progress
 
 
-ncluster = 64
+ncluster = 150
 
 
 def cluster(word_embed_fp, cluster_fp):
@@ -17,7 +17,7 @@ def cluster(word_embed_fp, cluster_fp):
 
     em = SphereEm(word, ncluster)
 
-    nrun = 20
+    nrun = 30
     for i in range(nrun):
         print_progress.print_progress(i, nrun)
         em.update()
