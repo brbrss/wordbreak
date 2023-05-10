@@ -6,7 +6,7 @@ import scipy.sparse
 np.seterr(all='raise')
 
 def zscore(x0, n0, x1, n1):
-    p = (x0+x1+0.01)/(n0+n1)
+    p = (x0+x1+1)/(n0+n1)
     m = p*n1
     return (x1-m)/np.sqrt(m)
 
@@ -46,8 +46,8 @@ class Analyzer:
         '''
         ar: array of word occurence shape==(nword)'''
         c = self.cludist(ar)
-        return self.top_chi2(c, base_clu+100)
+        return self.top_chi2(c, base_clu)
 
     def top_word(self, ar, base_word):
-        st = self.top_chi2(ar, base_word+100)
+        st = self.top_chi2(ar, base_word)
         return [self.wlist[i] for i in st]
